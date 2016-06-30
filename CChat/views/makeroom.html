@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="/scripts/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="/scripts/socket.io.js"></script>
+<script type="text/javascript">
+
+$(function(){
+	
+	$('#create').click(function(){
+		
+		var title = $('#title').val();
+		
+		$.ajax({
+
+			type : 'POST',
+			url : 'http://localhost:3000/create/',
+			data : {
+				'title' : title
+			},
+			success : function(data) {
+				if (data.result) {
+					alert("동일한 방제목이 존재합니다.");
+				} else {
+					opener.location.href = '/chat?title='+title;
+					self.close();
+					//window.open('/popup/chat?title='+title,'popup','width = 1000, height = 500');
+					//self.close();
+				}
+			}
+
+		});
+		
+	});
+	
+});
+</script>
+</head>
+<body>
+	<div>
+		<h3>방 생성</h3>
+		<div>
+			<label>제목</label>
+			<input type="text" id="title">
+		</div>
+		<hr>
+		<div style="text-align: right;">
+			<input type="button" value="생성" id="create">
+		</div>
+	</div>
+
+</body>
+</html>

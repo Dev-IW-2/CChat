@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="/scripts/jquery-1.12.4.min.js"></script>
+<script type="text/javascript">
+	$(function() {
+		
+		$('#id').on('keypress', function(e){
+			if(e.which == 13){
+				idChk();
+			}
+		});
+
+		$('#join').click(function() {
+			idChk();
+		});
+		
+		function idChk(){
+			
+			var id = $('#id').val();
+
+			$.ajax({
+
+				type : 'POST',
+				url : 'http://localhost:3000/',
+				data : {
+					'id' : id
+				},
+				success : function(data) {
+					if (data.result) {
+						alert("사용중인 ID입니다.");
+					} else {
+						location.href = 'http://localhost:3000/wait';
+					}
+				}
+
+			});
+		}
+
+	});
+</script>
+</head>
+<body>
+	<div>
+		<h2>Talk</h2>
+		<div>
+			<label>아이디 : </label> <input type="text" id="id"> <input
+				type="button" value="입장" id="join">
+		</div>
+	</div>
+</body>
+</html>

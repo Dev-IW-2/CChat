@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="scripts/jquery-1.12.4.min.js"></script>
+<script type="text/javascript" src="http://localhost:3000/socket.io/socket.io.js"></script> 
+<script type="text/javascript">
+$(function(){
+	
+	var socket = io({
+		transports: ['websocket']
+	}).connect('http://localhost:3000');
+	
+	var data = {
+		'title' : '<%=title%>',
+		'id' : '<%=id%>'
+	};
+	socket.emit('join', data);
+
+	socket.on('member', function(result){
+		
+		console.log(result);
+		$('#list').empty();
+		$.each(result.sockets.id, function(i , j){
+			$('#list').append('<li><a href="">'+i+'</a></li>');
+		});
+		
+	});
+	
+	socket.on('message', function(result){
+		
+		var msg = result.msg;
+		var id = result.id;
+		var txt = '[' + id + ']' + ' ' + msg;
+		var beforeTxt = $('#txtarea').val();
+		$('#txtarea').val(beforeTxt + '\n' + txt);
+
+	});
+	
+	socket.on('disconnect', function(event){
+		alert('서버가 불안정합니다. 잠시 후에 다시 접속을 시도해주세요.');
+		window.close();
+	});
+	
+	$('#send').click(function(){
+		sendMsg();		
+	});
+	
+	$('#msg').on('keypress', function(e){
+		if(e.which == 13){
+			sendMsg();	
+		}
+	});
+	
+	$('#exit').click(function(){
+		location.href = 'http://localhost:3000/wait';
+	});
+	
+	function sendMsg(){
+		
+		var msg = $('#msg').val();
+		var id = '<%=id%>';
+		
+		var data = {
+			'msg' : msg,
+			'id' : id
+		};
+		socket.emit('message', data);
+		$('#msg').val('');
+		$('#msg').focus();
+		
+	}
+	
+});
+</script>
+<style type="text/css">
+#list li {
+
+	display:inline; 
+	border-left:1px solid #999;
+	font:bold 12px Dotum;
+	padding:0 10px;
+
+}
+
+#list li:first-child{
+	border-left:none;
+}
+
+</style>
+</head>
+<body>
+	<h1><%=title%></h1>
+	<div>
+		<h5>참여자 목록</h5>
+		<ul id="list">
+		</ul>
+	</div>
+	<div>
+		<input type="button" value="나가기" id="exit">
+	</div>
+	<hr>
+	<div>
+		<textarea rows="20" cols="100" readonly="readonly" id="txtarea">
+		</textarea>
+	</div>
+	<div>
+		<input type="text" size="90" id="msg">
+		<input type="button" value="전송" id="send">
+	</div>
+</body>
+</html>
